@@ -1,0 +1,13 @@
+*.o
+*.o.*
+bin/
+bin/*
+build/
+build/*
+Progetto.sublime-workspace
+Progetto.sublime-project
+.DS_Store/
+include/
+include/*
+MinGWinclude/
+WinSDKInclude/
