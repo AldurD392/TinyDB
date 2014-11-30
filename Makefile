@@ -8,16 +8,16 @@ OBJECTS=$(patsubst %.c,%.o,$(SOURCES))
 
 LIB=build/libProtocol.a
 
-#-DDEBUG for debug flag, -DDAEMON to launch as daemon in Unix/Linux
+#-DDEBUG is for debug, -DDAEMON is to launch tinyDB as a daemon under Unix/Linux
 OPTDEFINE=-DDEBUG
 
 ifeq ($(OS),Windows_NT)
 #Windows stuff
 OPTFLAGS=-D_WIN32_WINNT='0x0501'
 OPTLIBS=-lws2_32
-#Point here with your Windows (cross) compiler
-CC=/usr/local/gcc-4.8.0-qt-4.8.4-for-mingw32/win32-gcc/bin/i586-mingw32-gcc
-AR=/usr/local/gcc-4.8.0-qt-4.8.4-for-mingw32/win32-gcc/bin/i586-mingw32-ar
+#If you want to cross compile, point here with your Windows (cross) compiler
+# CC=/usr/local/gcc-4.8.0-qt-4.8.4-for-mingw32/win32-gcc/bin/i586-mingw32-gcc
+# AR=/usr/local/gcc-4.8.0-qt-4.8.4-for-mingw32/win32-gcc/bin/i586-mingw32-ar
 RM=rm -rf
 CLIENT=Client.exe
 SERVER=Server.exe
@@ -32,33 +32,33 @@ CLIENT=Client
 SERVER=Server
 endif
 
+# Library, client and server
 ifeq ($(OS),Windows_NT)
-# Per tutti ho bisogno di libreria, client e server
 all: $(LIB) $(CLIENT) $(SERVER) $(PROCESSEDSERVER)
 else
 all: $(LIB) $(CLIENT) $(SERVER)
 endif
 
-# Per il client ho bisogno di libreria, e file del client
+# Client: library and subfiles
 $(CLIENT): $(LIB) $(CLIENT_SOURCES)
 	$(CC) $(CFLAGS) -o bin/$@ $(CLIENT_SOURCES) -lProtocol -Lbuild $(OPTLIBS)
 
-# Per il server ho bisogno di libreria, e file del server
+# Server: library and subfiles
 $(SERVER): $(LIB) $(SERVER_SOURCES)
 	$(CC) $(CFLAGS) -o bin/$@ $(SERVER_SOURCES) -lProtocol -Lbuild $(OPTLIBS)
 
 $(PROCESSEDSERVER): $(LIB) $(PROCESSED_SERVER_SOURCES) $(SERVER_SOURCES)
 	$(CC) $(CFLAGS) -o bin/$@ $(PROCESSED_SERVER_SOURCES) -lProtocol -Lbuild $(OPTLIBS)
 
-# Regola di default per ogni .c
+# Default rule for every .c file
 %.o : %.c
 	$(CC) $(CFLAGS) -o $@ -c $< $(OPTLIBS)
 
-# Costruisco la librera
+# Build the library
 $(LIB): build $(OBJECTS)
 	$(AR) rcs $@ $(OBJECTS)
 
-.PHONY: clean build check
+.PHONY: clean build
 
 build:
 	@mkdir -p build
